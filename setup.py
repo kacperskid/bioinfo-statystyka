@@ -6,5 +6,5 @@ setup(name='kpstat',
       author='Damian Kacperski, Adam Poznar',
       author_email='adampoznar@gmail.com',
       download_url='https://github.com/kacperskid/bioinfo-statystyka',
-      packages=['scipy', 'pandas', 'collections'],
+      packages=['kpstat'],
      )
