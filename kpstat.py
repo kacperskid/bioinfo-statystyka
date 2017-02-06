@@ -75,7 +75,7 @@ class StatsExecutor:
             if isinstance(self.results[test_name], dict):
                 for header1 in self.results[test_name]:
                     for header2 in self.results[test_name][header1]:
-                        ### Python 2
+
                         self.report_file.write("\n")
                         self.report_file.write(header1 + "-"+ header2)
                         self.report_file.write("\n \t test-statistics")
@@ -84,12 +84,6 @@ class StatsExecutor:
                         self.report_file.write(str(self.results[test_name][header1][header2][1]))
                         self.report_file.write("\n")
 
-                        ###Python 3
-                        # self.report_file.write(str(("\n" + header1 + header2 + "\n \t",
-                        #      "test-statistics ", self.results[test_name][header1][header2][0],
-                        #      "\n \t",
-                        #     "p-value ", self.results[test_name][header1][header2][1],
-                        #      "\n")))
             else:
                 for result in zip(self.headers_of_numeric_columns, self.results[test_name]):
                     self.report_file.write(str(
