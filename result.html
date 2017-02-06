@@ -1,0 +1,73 @@
+<html>
+<head>
+<link rel="stylesheet" href="styles.css">
+    <title>Analysis results</title>
+</head>
+
+<body>
+<div class=main_container>
+<div id=summary_table>
+
+<h2>SUMMARY</h2>
+             Price   Latitude   Longitude
+count    49.000000  49.000000   49.000000
+mean   1542.857143  37.101156  -45.060311
+std     848.528137  19.619054   65.281376
+min    1200.000000 -36.133333 -123.830000
+25%    1200.000000  33.448330  -89.459170
+50%    1200.000000  40.693610  -74.006390
+75%    1200.000000  48.883333    0.145590
+max    3600.000000  62.900000  152.950000
+
+</div>
+
+<div class=test>
+<h2>Shapiro</h2>
+<p>
+ Price : 
+ 	 test-statistics 0.416792064905 </br>
+ 	 p value 1.10879849139e-12 </br>
+</p>
+
+<p>
+ Latitude : </br>
+ 	 test-statistics 0.719701290131 </br>
+ 	 p value 2.38903083982e-08</br>
+</p>
+
+<p>
+ Longitude : </br>
+ 	 test-statistics 0.853366851807 </br>
+ 	 p value 2.25910152949e-05</br>
+</p>
+</div>
+</br>
+</br>
+
+<div class=test>
+<h2>Chisq</h2></br>
+</br>
+<p>
+ Price : </br>
+ 	 test-statistics 22400.0 </br>
+ 	 p value 0.0</br>
+</p>
+<p>
+ Latitude : </br>
+ 	 test-statistics 497.97772753 </br>
+ 	 p value 4.04625677854e-76</br>
+</p>
+<p>
+ Longitude : </br>
+ 	 test-statistics -4539.68437078 </br>
+ 	 p value 1.0</br>
+     
+</p>
+     
+</div>
+</div>
+</body>
+</html>
+
+
+
