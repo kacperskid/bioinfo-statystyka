@@ -1,73 +1,216 @@
 <html>
 <head>
-<link rel="stylesheet" href="styles.css">
-    <title>Analysis results</title>
+<link rel="stylesheet" href="styles.css">	
+<title>Analysis results</title>
 </head>
-
 <body>
-<div class=main_container>
-<div id=summary_table>
-
+<div class="main_container">
+<div id="summary_table">
 <h2>SUMMARY</h2>
-             Price   Latitude   Longitude
-count    49.000000  49.000000   49.000000
-mean   1542.857143  37.101156  -45.060311
-std     848.528137  19.619054   65.281376
-min    1200.000000 -36.133333 -123.830000
-25%    1200.000000  33.448330  -89.459170
-50%    1200.000000  40.693610  -74.006390
-75%    1200.000000  48.883333    0.145590
-max    3600.000000  62.900000  152.950000
-
+</br>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Price</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>49.000000</td>
+      <td>49.000000</td>
+      <td>49.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>1542.857143</td>
+      <td>37.101156</td>
+      <td>-45.060311</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>848.528137</td>
+      <td>19.619054</td>
+      <td>65.281376</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>1200.000000</td>
+      <td>-36.133333</td>
+      <td>-123.830000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>1200.000000</td>
+      <td>33.448330</td>
+      <td>-89.459170</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>1200.000000</td>
+      <td>40.693610</td>
+      <td>-74.006390</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>1200.000000</td>
+      <td>48.883333</td>
+      <td>0.145590</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>3600.000000</td>
+      <td>62.900000</td>
+      <td>152.950000</td>
+    </tr>
+  </tbody>
+</table>
 </div>
+<div class="test"><h2>Shapiro</h2>
 
-<div class=test>
-<h2>Shapiro</h2>
 <p>
- Price : 
+ Price : </br> 
  	 test-statistics 0.416792064905 </br>
- 	 p value 1.10879849139e-12 </br>
+ 	 p value 1.10879849139e-12</br>
 </p>
-
 <p>
- Latitude : </br>
+ Latitude : </br> 
  	 test-statistics 0.719701290131 </br>
  	 p value 2.38903083982e-08</br>
 </p>
-
 <p>
- Longitude : </br>
+ Longitude : </br> 
  	 test-statistics 0.853366851807 </br>
  	 p value 2.25910152949e-05</br>
 </p>
 </div>
-</br>
-</br>
+<div class="test"><h2>Chisq</h2>
 
-<div class=test>
-<h2>Chisq</h2></br>
-</br>
 <p>
- Price : </br>
+ Price : </br> 
  	 test-statistics 22400.0 </br>
  	 p value 0.0</br>
 </p>
 <p>
- Latitude : </br>
+ Latitude : </br> 
  	 test-statistics 497.97772753 </br>
  	 p value 4.04625677854e-76</br>
 </p>
 <p>
- Longitude : </br>
+ Longitude : </br> 
  	 test-statistics -4539.68437078 </br>
  	 p value 1.0</br>
-     
 </p>
-     
 </div>
+<div class="test"><h2>Spearman</h2>
+<p>
+
+Latitude-Longitude</br>
+ 	 test-statistics: 0.2878068698</br>
+ 	 p value:0.0449320328796</br>
+</p>
+<p>
+
+Price-Latitude</br>
+ 	 test-statistics: -0.0680570072768</br>
+ 	 p value:0.642189250196</br>
+</p>
+<p>
+
+Price-Longitude</br>
+ 	 test-statistics: 0.0845556757075</br>
+ 	 p value:0.563503140793</br>
+</p>
+
+</div>
+<div class="test"><h2>Anova</h2>
+<p>
+
+Latitude-Longitude</br>
+ 	 test-statistics: 71.186952371</br>
+ 	 p value:3.34650767986e-13</br>
+</p>
+<p>
+
+Price-Latitude</br>
+ 	 test-statistics: 154.219990329</br>
+ 	 p value:1.10055087529e-21</br>
+</p>
+<p>
+
+Price-Longitude</br>
+ 	 test-statistics: 170.591123724</br>
+ 	 p value:5.15922626355e-23</br>
+</p>
+
+</div>
+<div class="test"><h2>Ttest</h2>
+<p>
+
+Latitude-Longitude</br>
+ 	 test-statistics: 7.67858597371</br>
+ 	 p value:6.76056768313e-10</br>
+</p>
+<p>
+
+Price-Latitude</br>
+ 	 test-statistics: 12.3788360035</br>
+ 	 p value:1.50115021986e-16</br>
+</p>
+<p>
+
+Price-Longitude</br>
+ 	 test-statistics: 13.1231056991</br>
+ 	 p value:1.70403000068e-17</br>
+</p>
+
+</div>
+<div class="test"><h2>Pearson</h2>
+<p>
+
+Latitude-Longitude</br>
+ 	 test-statistics: -0.37615441442</br>
+ 	 p value:0.00772823227206</br>
+</p>
+<p>
+
+Price-Latitude</br>
+ 	 test-statistics: -0.138997339194</br>
+ 	 p value:0.340844489952</br>
+</p>
+<p>
+
+Price-Longitude</br>
+ 	 test-statistics: 0.0616781185391</br>
+ 	 p value:0.673753326403</br>
+</p>
+
+</div>
+<div class="test"><h2>Kruskal</h2>
+<p>
+
+Latitude-Longitude</br>
+ 	 test-statistics: 49.1345334334</br>
+ 	 p value:2.38995390585e-12</br>
+</p>
+<p>
+
+Price-Latitude</br>
+ 	 test-statistics: 79.0055245941</br>
+ 	 p value:6.19364909307e-19</br>
+</p>
+<p>
+
+Price-Longitude</br>
+ 	 test-statistics: 79.0055245941</br>
+ 	 p value:6.19364909307e-19</br>
+</p>
+
+</div>
+
 </div>
 </body>
 </html>
-
-
-
