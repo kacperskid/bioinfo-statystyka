@@ -136,7 +136,7 @@ class StatsExecutor:
     def write_summary_html(self):
         self.report_file_html.write(str("<html>\n<head>\n<link rel=\"stylesheet\" href=\"styles.css\">\t\n<title>Analysis results</title>\n</head>\n<body>\n<div class=\"main_container\">\n<div id=\"summary_table\">\n"))
         self.report_file_html.write("<h2>SUMMARY</h2>\n</br>\n")
-        self.report_file_html.write(str(self.summary))
+        self.report_file_html.write(self.summary.to_html())
         self.report_file_html.write("\n</div>\n")   
         
     def _write_section_html(self,section_name):
