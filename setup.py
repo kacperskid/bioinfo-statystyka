@@ -7,4 +7,5 @@ setup(name='kpstat',
       author_email='adampoznar@gmail.com',
       download_url='https://github.com/kacperskid/bioinfo-statystyka',
       packages=['kpstat'],
+      install_requires=['scipy','pandas']
      )
