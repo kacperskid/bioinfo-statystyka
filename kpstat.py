@@ -75,24 +75,24 @@ class StatsExecutor:
             if isinstance(self.results[test_name], dict):
                 for header1 in self.results[test_name]:
                     for header2 in self.results[test_name][header1]:
-
+                        
                         self.report_file.write("\n")
                         self.report_file.write(header1 + "-"+ header2)
-                        self.report_file.write("\n \t test-statistics")
+                        self.report_file.write("\n \t test-statistics: ")
                         self.report_file.write(str(self.results[test_name][header1][header2][0]))
-                        self.report_file.write("\n \t p-value")
+                        self.report_file.write("\n \t p value: ")
                         self.report_file.write(str(self.results[test_name][header1][header2][1]))
                         self.report_file.write("\n")
 
             else:
                 for result in zip(self.headers_of_numeric_columns, self.results[test_name]):
                     self.report_file.write(str(
-                        "\n {0} : \n \t p-value {1} \n \t test-statistics {2}".format(result[0], result[1][0], result[1][1])))
+                        "\n {0} : \n \t test-statistics {1} \n \t p value {2}".format(result[0], result[1][0], result[1][1])))
             self.report_file.write("\n" * 3)
         self.report_file.close()
         
     def write_summary(self):
-        self.report_file.write("SUMMARY")
+        self.report_file.write("SUMMARY\n")
         self.report_file.write(str(self.summary))
         self.report_file.write("\n" * 3)        
 
@@ -107,10 +107,48 @@ class StatsExecutor:
         self.report_file.write(section_name)
         self.report_file.write("-" * 50+"\n")
 
+    def write_html(self,name="result.html"):
+        self.report_file_html=open(name,"w")
+        self.write_summary_html()
+        for test_name in self.results:
+            self._write_section_html(test_name)
+            if isinstance(self.results[test_name], dict):
+                for header1 in self.results[test_name]:
+                    for header2 in self.results[test_name][header1]:
+                        self.report_file_html.write("<p>\n")
+                        self.report_file_html.write("\n")
+                        self.report_file_html.write(header1 + "-"+ header2)
+                        self.report_file_html.write("</br>\n \t test-statistics: ")
+                        self.report_file_html.write(str(self.results[test_name][header1][header2][0]))
+                        self.report_file_html.write("</br>\n \t p value:")
+                        self.report_file_html.write(str(self.results[test_name][header1][header2][1]))
+                        self.report_file_html.write("</br>\n")
+                        self.report_file_html.write("</p>\n")
+
+            else:
+                for result in zip(self.headers_of_numeric_columns, self.results[test_name]):
+                    self.report_file_html.write(str(
+                        "\n<p>\n {0} : </br> \n \t test-statistics {1} </br>\n \t p value {2}</br>\n</p>".format(result[0], result[1][0], result[1][1])))
+            self.report_file_html.write("\n</div>\n")
+        self.report_file_html.write("\n</div>\n</body>\n</html>")
+        self.report_file_html.close()
+            
+    def write_summary_html(self):
+        self.report_file_html.write(str("<html>\n<head>\n<link rel=\"stylesheet\" href=\"styles.css\">\t\n<title>Analysis results</title>\n</head>\n<body>\n<div class=\"main_container\">\n<div id=\"summary_table\">\n"))
+        self.report_file_html.write("<h2>SUMMARY</h2>\n</br>\n")
+        self.report_file_html.write(str(self.summary))
+        self.report_file_html.write("\n</div>\n")   
+        
+    def _write_section_html(self,section_name):
+        self.report_file_html.write("<div class=\"test\"><h2>")
+        self.report_file_html.write(section_name)
+        self.report_file_html.write("</h2>\n")
+
 
 
 
 if __name__ == '__main__':
     tests = StatsExecutor("data.csv", sep=",", header=0)
     #tests.print_results()
-    tests.write_txt()
+    #tests.write_txt()
+    tests.write_html()
