@@ -1,0 +1,57 @@
+.dataframe tr:nth-child(even){
+    background-color: #FFF588;
+}
+.dataframe tr:nth-child(odd){
+    background-color: #FFF15A;
+}
+body {
+	background-color: #8677b3;
+}
+div {
+	margin: 1px;
+	display: block;
+	border-radius: 10px;
+	background-color: #C7B4FF;
+	margin-left: auto;
+	margin-right: auto;
+}
+.dataframe { 
+	text-align: center;
+	border: none;
+	margin-bottom: 15px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.test {
+	background-color: #FFF15A;
+}
+h2 {
+	color: #421BB2;
+	font-family: Arial;
+	font-size: 30px;
+	font-style: normal;
+	font-weight: bold;
+	letter-spacing: normal;
+	padding: 7px 14px;
+	margin: auto;
+	text-align: center;
+}
+.main_container {
+	color: #000000;
+	font-family: Arial;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: normal;
+	padding: 38px;
+	width: 50%;
+}
+p {
+	color: #000000;
+	font-family: Arial;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: normal;
+	padding: 7px 14px;
+}
