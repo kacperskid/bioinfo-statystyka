@@ -1,0 +1,117 @@
+SUMMARY             Price   Latitude   Longitude
+count    49.000000  49.000000   49.000000
+mean   1542.857143  37.101156  -45.060311
+std     848.528137  19.619054   65.281376
+min    1200.000000 -36.133333 -123.830000
+25%    1200.000000  33.448330  -89.459170
+50%    1200.000000  40.693610  -74.006390
+75%    1200.000000  48.883333    0.145590
+max    3600.000000  62.900000  152.950000
+
+
+--------------------------------------------------Shapiro--------------------------------------------------
+
+ Price : 
+ 	 p-value 0.416792064905 
+ 	 test-statistics 1.10879849139e-12
+ Latitude : 
+ 	 p-value 0.719701290131 
+ 	 test-statistics 2.38903083982e-08
+ Longitude : 
+ 	 p-value 0.853366851807 
+ 	 test-statistics 2.25910152949e-05
+
+
+--------------------------------------------------Chisq--------------------------------------------------
+
+ Price : 
+ 	 p-value 22400.0 
+ 	 test-statistics 0.0
+ Latitude : 
+ 	 p-value 497.97772753 
+ 	 test-statistics 4.04625677854e-76
+ Longitude : 
+ 	 p-value -4539.68437078 
+ 	 test-statistics 1.0
+
+
+--------------------------------------------------Spearman--------------------------------------------------
+
+Latitude-Longitude
+ 	 test-statistics0.2878068698
+ 	 p-value0.0449320328796
+
+Price-Latitude
+ 	 test-statistics-0.0680570072768
+ 	 p-value0.642189250196
+
+Price-Longitude
+ 	 test-statistics0.0845556757075
+ 	 p-value0.563503140793
+
+
+
+--------------------------------------------------Anova--------------------------------------------------
+
+Latitude-Longitude
+ 	 test-statistics71.186952371
+ 	 p-value3.34650767986e-13
+
+Price-Latitude
+ 	 test-statistics154.219990329
+ 	 p-value1.10055087529e-21
+
+Price-Longitude
+ 	 test-statistics170.591123724
+ 	 p-value5.15922626355e-23
+
+
+
+--------------------------------------------------Ttest--------------------------------------------------
+
+Latitude-Longitude
+ 	 test-statistics7.67858597371
+ 	 p-value6.76056768313e-10
+
+Price-Latitude
+ 	 test-statistics12.3788360035
+ 	 p-value1.50115021986e-16
+
+Price-Longitude
+ 	 test-statistics13.1231056991
+ 	 p-value1.70403000068e-17
+
+
+
+--------------------------------------------------Pearson--------------------------------------------------
+
+Latitude-Longitude
+ 	 test-statistics-0.37615441442
+ 	 p-value0.00772823227206
+
+Price-Latitude
+ 	 test-statistics-0.138997339194
+ 	 p-value0.340844489952
+
+Price-Longitude
+ 	 test-statistics0.0616781185391
+ 	 p-value0.673753326403
+
+
+
+--------------------------------------------------Kruskal--------------------------------------------------
+
+Latitude-Longitude
+ 	 test-statistics49.1345334334
+ 	 p-value2.38995390585e-12
+
+Price-Latitude
+ 	 test-statistics79.0055245941
+ 	 p-value6.19364909307e-19
+
+Price-Longitude
+ 	 test-statistics79.0055245941
+ 	 p-value6.19364909307e-19
+
+
+

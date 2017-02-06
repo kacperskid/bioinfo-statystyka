@@ -1,3 +1,4 @@
+# -*- coding: cp1250 -*-
 import pandas as pd
 import scipy.stats
 from collections import OrderedDict
@@ -5,17 +6,17 @@ from collections import OrderedDict
 
 class StatsExecutor:
     def __init__(self, filepath, sep=",", header=0):
-        self.data = pd.read_csv(filepath, sep=sep, header=header)
+        self.data = pd.read_csv(filepath, sep=sep, header=header) #wczytanie danych z pomoc¹ pandas
 
-        self.summary = self._summarize()
-        self.headers_of_numeric_columns = list(self.summary)
-
+        self.summary = self._summarize() #statystyki opisowe dodane do obiektu
+        self.headers_of_numeric_columns = list(self.summary)  #po
+        
         self.results = OrderedDict()
         self._prepare_results_storage()
         self._make_common_tests_set()
 
     def _summarize(self):
-        return self.data.describe()
+        return self.data.describe()# korzysta z wbudowanej metody dla obiektu csv od pandas dla statystyk opisowych
 
     def _prepare_results_storage(self):
         self.results["Shapiro"] = []
@@ -50,15 +51,15 @@ class StatsExecutor:
             if isinstance(self.results[test_name], dict):
                 for header1 in self.results[test_name]:
                     for header2 in self.results[test_name][header1]:
-                        print(header1, header2, "\n\t",
+                        print(header1, header2, "\n \t",
                               "test-statistics ", self.results[test_name][header1][header2][0],
-                              "\n\t",
+                              "\n \t",
                               "p-value ", self.results[test_name][header1][header2][1],
                               "\n")
             else:
                 for result in zip(self.headers_of_numeric_columns, self.results[test_name]):
                     print(
-                        "{0} : \n\t p-value {1} \n\t test-statistics {2}".format(result[0], result[1][0], result[1][1]))
+                        "{0} : \n \t p-value {1} \n \t test-statistics {2}".format(result[0], result[1][0], result[1][1]))
             print("\n" * 3)
 
     def print_summary(self):
@@ -66,13 +67,56 @@ class StatsExecutor:
         print(self.summary)
         print("\n" * 3)
 
+    def write_txt(self,name="result.txt"):
+        self.report_file=open(name,"w")
+        self.write_summary()
+        for test_name in self.results:
+            self._write_section(test_name)
+            if isinstance(self.results[test_name], dict):
+                for header1 in self.results[test_name]:
+                    for header2 in self.results[test_name][header1]:
+                        ### Python 2
+                        self.report_file.write("\n")
+                        self.report_file.write(header1 + "-"+ header2)
+                        self.report_file.write("\n \t test-statistics")
+                        self.report_file.write(str(self.results[test_name][header1][header2][0]))
+                        self.report_file.write("\n \t p-value")
+                        self.report_file.write(str(self.results[test_name][header1][header2][1]))
+                        self.report_file.write("\n")
+
+                        ###Python 3
+                        # self.report_file.write(str(("\n" + header1 + header2 + "\n \t",
+                        #      "test-statistics ", self.results[test_name][header1][header2][0],
+                        #      "\n \t",
+                        #     "p-value ", self.results[test_name][header1][header2][1],
+                        #      "\n")))
+            else:
+                for result in zip(self.headers_of_numeric_columns, self.results[test_name]):
+                    self.report_file.write(str(
+                        "\n {0} : \n \t p-value {1} \n \t test-statistics {2}".format(result[0], result[1][0], result[1][1])))
+            self.report_file.write("\n" * 3)
+        self.report_file.close()
+        
+    def write_summary(self):
+        self.report_file.write("SUMMARY")
+        self.report_file.write(str(self.summary))
+        self.report_file.write("\n" * 3)        
+
     @staticmethod
     def _print_section(section_name):
         print("-" * 50)
         print(section_name)
         print("-" * 50)
 
+    def _write_section(self,section_name):
+        self.report_file.write("-" * 50)
+        self.report_file.write(section_name)
+        self.report_file.write("-" * 50+"\n")
+
+
+
 
 if __name__ == '__main__':
     tests = StatsExecutor("data.csv", sep=",", header=0)
-    tests.print_results()
+    #tests.print_results()
+    tests.write_txt()
