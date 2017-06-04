@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Indices and tables &#8212; bioinfo_stat 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Contents:</p>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-kpstat"></span><dl class="class">
+<dt id="kpstat.StatsExecutor">
+<em class="property">class </em><code class="descclassname">kpstat.</code><code class="descname">StatsExecutor</code><span class="sig-paren">(</span><em>filepath</em>, <em>sep='</em>, <em>'</em>, <em>header=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform many tests on one data at once.</p>
+<p>Inputs are path of file, separator and header (0-no header, 1-header present).
+To print out summary, type analysis_name.print_results().
+To write html or txt summary, type type analysis_name.write_txt() or analysis_name.write_tho()</p>
+<dl class="method">
+<dt id="kpstat.StatsExecutor.prepare_complex_multilayer_container">
+<code class="descname">prepare_complex_multilayer_container</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.prepare_complex_multilayer_container"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.prepare_complex_multilayer_container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares container for tests that compare  different columns, requires</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.print_results">
+<code class="descname">print_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.print_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.print_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main method for printing analysis results in console. Obviously requires launching analysis first</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.print_summary">
+<code class="descname">print_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.print_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.print_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints out summary table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.write_html">
+<code class="descname">write_html</code><span class="sig-paren">(</span><em>name='result.html'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.write_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.write_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main method for creating html formatted results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.write_summary">
+<code class="descname">write_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.write_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.write_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes summary for write_txt method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.write_summary_html">
+<code class="descname">write_summary_html</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.write_summary_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.write_summary_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates html header and formatted summary table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kpstat.StatsExecutor.write_txt">
+<code class="descname">write_txt</code><span class="sig-paren">(</span><em>name='result.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kpstat.html#StatsExecutor.write_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kpstat.StatsExecutor.write_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes summary to text file, input is filename</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Damian Kacperski, Adam Poznar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

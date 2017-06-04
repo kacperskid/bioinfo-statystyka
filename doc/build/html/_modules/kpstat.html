@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>kpstat &#8212; bioinfo_stat 1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for kpstat</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: cp1250 -*-</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="StatsExecutor"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor">[docs]</a><span class="k">class</span> <span class="nc">StatsExecutor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Perform many tests on one data at once.</span>
+
+<span class="sd">    Inputs are path of file, separator and header (0-no header, 1-header present).</span>
+<span class="sd">    To print out summary, type analysis_name.print_results().</span>
+<span class="sd">    To write html or txt summary, type type analysis_name.write_txt() or analysis_name.write_tho()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes file, generates data structure and finally automatically runs tests&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span> <span class="c1">#wczytanie danych z pomocą pandas</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summarize</span><span class="p">()</span> <span class="c1">#statystyki opisowe dodane do obiektu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>  <span class="c1">#daje naglowki z kolumn podsumowania ktore automatycznie oblicza je tylko dla kolumn numerycznych</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span> <span class="c1">#tworzy liste wynikowa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_results_storage</span><span class="p">()</span> <span class="c1">#dodaje do listy wynikowej listy i slowniki z testami</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_common_tests_set</span><span class="p">()</span> <span class="c1">#uruchamia wszystkie testy, mozna zahashowac </span>
+
+    <span class="k">def</span> <span class="nf">_summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Performs basic descriptive statistics using pandas&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="c1"># korzysta z wbudowanej metody dla obiektu csv od pandas dla statystyk opisowych</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_results_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepares containers for results&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Shapiro&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Chisq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Spearman&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_complex_multilayer_container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Anova&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_complex_multilayer_container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Ttest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_complex_multilayer_container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Pearson&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_complex_multilayer_container</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Kruskal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_complex_multilayer_container</span><span class="p">()</span>
+
+<div class="viewcode-block" id="StatsExecutor.prepare_complex_multilayer_container"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.prepare_complex_multilayer_container">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_complex_multilayer_container</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepares container for tests that compare  different columns, requires &quot;&quot;&quot;</span>
+        <span class="n">container_for_each_header</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">container_for_each_header</span></div>
+
+    <span class="k">def</span> <span class="nf">_make_common_tests_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Automaticaly creates common tests for data, data, headers and summary need to be initialized &quot;&quot;&quot;</span>
+        <span class="n">headers_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">[:]</span> <span class="c1">#kopije nagłówki na potrzeby metody</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Shapiro&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">shapiro</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Chisq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">chisquare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span>
+            <span class="n">headers_copy</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name2</span> <span class="ow">in</span> <span class="n">headers_copy</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Spearman&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="n">name2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">spearmanr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name2</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Anova&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="n">name2</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">f_oneway</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Ttest&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="n">name2</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">ttest_rel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Pearson&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="n">name2</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pearsonr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name2</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;Kruskal&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="n">name2</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">kruskal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">name2</span><span class="p">])</span>
+
+<div class="viewcode-block" id="StatsExecutor.print_results"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.print_results">[docs]</a>    <span class="k">def</span> <span class="nf">print_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Main method for printing analysis results in console. Obviously requires launching analysis first&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span> 
+        <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_print_section</span><span class="p">(</span><span class="n">test_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span> <span class="c1">#sprawdzenie czy wyniki sa slownikiem, jak nie to znak ze jest to slownik i trzeba uzyc innej prezentacji danych</span>
+                <span class="k">for</span> <span class="n">header1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">header2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">]:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">header1</span><span class="p">,</span> <span class="n">header2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;test-statistics &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;p-value &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]):</span> <span class="c1">#iteracja po zzipowanej krotce naglowkow i wynikow</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> : </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> p-value </span><span class="si">{1}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> test-statistics </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StatsExecutor.print_summary"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.print_summary">[docs]</a>    <span class="k">def</span> <span class="nf">print_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prints out summary table&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_print_section</span><span class="p">(</span><span class="s2">&quot;SUMMARY&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StatsExecutor.write_txt"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.write_txt">[docs]</a>    <span class="k">def</span> <span class="nf">write_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;result.txt&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes summary to text file, input is filename&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_summary</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_section</span><span class="p">(</span><span class="n">test_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">header1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">header2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">]:</span>
+                        
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header1</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="o">+</span> <span class="n">header2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> test-statistics: &quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> p value: &quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{0}</span><span class="s2"> : </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> test-statistics </span><span class="si">{1}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> p value </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="StatsExecutor.write_summary"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.write_summary">[docs]</a>    <span class="k">def</span> <span class="nf">write_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes summary for write_txt method&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SUMMARY</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>        </div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_print_section</span><span class="p">(</span><span class="n">section_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prints current name of section and lots of stars for neat look&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes to file name of current section&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StatsExecutor.write_html"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.write_html">[docs]</a>    <span class="k">def</span> <span class="nf">write_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;result.html&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Main method for creating html formatted results&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_summary_html</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_section_html</span><span class="p">(</span><span class="n">test_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">header1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">header2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header1</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="o">+</span> <span class="n">header2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/br&gt;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> test-statistics: &quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/br&gt;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> p value:&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">][</span><span class="n">header1</span><span class="p">][</span><span class="n">header2</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/br&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/p&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers_of_numeric_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">test_name</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;p&gt;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{0}</span><span class="s2"> : &lt;/br&gt; </span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> test-statistics </span><span class="si">{1}</span><span class="s2"> &lt;/br&gt;</span><span class="se">\n</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> p value </span><span class="si">{2}</span><span class="s2">&lt;/br&gt;</span><span class="se">\n</span><span class="s2">&lt;/p&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&lt;/body&gt;</span><span class="se">\n</span><span class="s2">&lt;/html&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+            
+<div class="viewcode-block" id="StatsExecutor.write_summary_html"><a class="viewcode-back" href="../index.html#kpstat.StatsExecutor.write_summary_html">[docs]</a>    <span class="k">def</span> <span class="nf">write_summary_html</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates html header and formatted summary table&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;&lt;html&gt;</span><span class="se">\n</span><span class="s2">&lt;head&gt;</span><span class="se">\n</span><span class="s2">&lt;link rel=</span><span class="se">\&quot;</span><span class="s2">stylesheet</span><span class="se">\&quot;</span><span class="s2"> href=</span><span class="se">\&quot;</span><span class="s2">styles.css</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\t\n</span><span class="s2">&lt;title&gt;Analysis results&lt;/title&gt;</span><span class="se">\n</span><span class="s2">&lt;/head&gt;</span><span class="se">\n</span><span class="s2">&lt;body&gt;</span><span class="se">\n</span><span class="s2">&lt;div class=</span><span class="se">\&quot;</span><span class="s2">main_container</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&lt;div id=</span><span class="se">\&quot;</span><span class="s2">summary_table</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;h2&gt;SUMMARY&lt;/h2&gt;</span><span class="se">\n</span><span class="s2">&lt;/br&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">to_html</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/div&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>   </div>
+        
+    <span class="k">def</span> <span class="nf">_write_section_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">section_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate secion name&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;div class=</span><span class="se">\&quot;</span><span class="s2">test</span><span class="se">\&quot;</span><span class="s2">&gt;&lt;h2&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">report_file_html</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/h2&gt;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;This part of program launches only when the file is directly executed&quot;&quot;&quot;</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="n">StatsExecutor</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1">#tests.print_results()</span>
+    <span class="c1">#tests.write_txt()</span>
+    <span class="n">tests</span><span class="o">.</span><span class="n">write_html</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Damian Kacperski, Adam Poznar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
