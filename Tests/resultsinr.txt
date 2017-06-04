@@ -1,0 +1,228 @@
+
+R version 3.2.5 (2016-04-14) -- "Very, Very Secure Dishes"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R jest oprogramowaniem darmowym i dostarczany jest BEZ JAKIEJKOLWIEK GWARANCJI.
+Mo¿esz go rozpowszechniaæ pod pewnymi warunkami.
+Wpisz 'license()' lub 'licence()' aby uzyskaæ szczegó³y dystrybucji.
+
+R jest projektem kolaboracyjnym z wieloma uczestnikami.
+Wpisz 'contributors()' aby uzyskaæ wiêcej informacji oraz
+'citation()' aby dowiedzieæ siê jak cytowaæ R lub pakiety R w publikacjach.
+
+Wpisz 'demo()' aby zobaczyæ demo, 'help()' aby uzyskaæ pomoc on-line, lub
+'help.start()' aby uzyskaæ pomoc w przegl¹darce HTML.
+Wpisz 'q()' aby wyjœæ z R.
+
+[Poprzednio zapisany obszar roboczy zosta³ przywrócony]
+
+> dane=read.table("E:/data.csv",header=T,sep=",")
+> head(dane)
+  Transaction_date  Product Price Payment_Type              Name
+1      1/2/09 6:17 Product1  1200   Mastercard          carolina
+2      1/2/09 4:53 Product1  1200         Visa            Betina
+3     1/2/09 13:08 Product1  1200   Mastercard Federica e Andrea
+4     1/3/09 14:44 Product1  1200         Visa             Gouya
+5     1/4/09 12:56 Product2  3600         Visa           Gerd W 
+6     1/4/09 13:19 Product1  1200         Visa          LAURENCE
+                          City    State        Country Account_Created
+1                     Basildon  England United Kingdom     1/2/09 6:00
+2 Parkville                          MO  United States     1/2/09 4:42
+3 Astoria                            OR  United States    1/1/09 16:21
+4                       Echuca Victoria      Australia   9/25/05 21:13
+5 Cahaba Heights                     AL  United States  11/15/08 15:47
+6 Mickleton                          NJ  United States   9/24/08 15:19
+    Last_Login  Latitude   Longitude
+1  1/2/09 6:08  51.50000   -1.116667
+2  1/2/09 7:49  39.19500  -94.681940
+3 1/3/09 12:32  46.18806 -123.830000
+4 1/3/09 14:22 -36.13333  144.750000
+5 1/4/09 12:45  33.52056  -86.802500
+6 1/4/09 13:04  39.79000  -75.238060
+> attach(dane)
+> mean(Price)
+[1] 1542.857
+> mean(Longitude)
+[1] -45.06031
+> mean(Latitude)
+[1] 37.10116
+> sd(Price)
+[1] 848.5281
+> sd(Longitude)
+[1] 65.28138
+> sd(Latitude)
+[1] 19.61905
+> quantile(Price)
+  0%  25%  50%  75% 100% 
+1200 1200 1200 1200 3600 
+> quantile(Longitude)
+        0%        25%        50%        75%       100% 
+-123.83000  -89.45917  -74.00639    0.14559  152.95000 
+> quantile(Latitude)
+       0%       25%       50%       75%      100% 
+-36.13333  33.44833  40.69361  48.88333  62.90000 
+> 
+> shapiro.test(Price)
+
+        Shapiro-Wilk normality test
+
+data:  Price
+W = 0.41679, p-value = 1.109e-12
+
+> shapiro.test(Longitude)
+
+        Shapiro-Wilk normality test
+
+data:  Longitude
+W = 0.85337, p-value = 2.259e-05
+
+> shapiro.test(Latitude)
+
+        Shapiro-Wilk normality test
+
+data:  Latitude
+W = 0.7197, p-value = 2.389e-08
+
+> 
+> chisq.test(Price)
+
+        Chi-squared test for given probabilities
+
+data:  Price
+X-squared = 22400, df = 48, p-value < 2.2e-16
+
+> chisq.test(Longitude)
+B³¹d w poleceniu 'chisq.test(Longitude)':
+  wszystkie wpisy 'x' musz¹ byæ nieujemne oraz skoñczone
+> chisq.test(Latitude)
+B³¹d w poleceniu 'chisq.test(Latitude)':
+  wszystkie wpisy 'x' musz¹ byæ nieujemne oraz skoñczone
+> 
+> cor.test(Latitude, Longitude, method="spearman")
+
+        Spearman's rank correlation rho
+
+data:  Latitude and Longitude
+S = 13959, p-value = 0.04493
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+      rho 
+0.2878069 
+
+Komunikat ostrzegawczy:
+W poleceniu 'cor.test.default(Latitude, Longitude, method = "spearman")':
+  nie mo¿na obliczyæ dok³adnej wartoœci prawdopodobieñstwa z powtórzonymi wartoœciami
+> cor.test(Price, Latitude, method="spearman")
+
+        Spearman's rank correlation rho
+
+data:  Price and Latitude
+S = 20934, p-value = 0.6422
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+        rho 
+-0.06805701 
+
+Komunikat ostrzegawczy:
+W poleceniu 'cor.test.default(Price, Latitude, method = "spearman")':
+  nie mo¿na obliczyæ dok³adnej wartoœci prawdopodobieñstwa z powtórzonymi wartoœciami
+> cor.test(Price, Longitude, method="spearman")
+
+        Spearman's rank correlation rho
+
+data:  Price and Longitude
+S = 17943, p-value = 0.5635
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+       rho 
+0.08455568 
+
+Komunikat ostrzegawczy:
+W poleceniu 'cor.test.default(Price, Longitude, method = "spearman")':
+  nie mo¿na obliczyæ dok³adnej wartoœci prawdopodobieñstwa z powtórzonymi wartoœciami
+> 
+> #ANOVA - kryteria s¹ niemo¿liwe do sprawdzenia w R
+> 
+> t.test(Latitude, Longitude)
+
+        Welch Two Sample t-test
+
+data:  Latitude and Longitude
+t = 8.4372, df = 56.6, p-value = 1.368e-11
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  62.65855 101.66438
+sample estimates:
+mean of x mean of y 
+ 37.10116 -45.06031 
+
+> t.test(Price, Latitude)
+
+        Welch Two Sample t-test
+
+data:  Price and Latitude
+t = 12.419, df = 48.051, p-value < 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 1261.972 1749.540
+sample estimates:
+ mean of x  mean of y 
+1542.85714   37.10116 
+
+> t.test(Price, Longitude)
+
+        Welch Two Sample t-test
+
+data:  Price and Longitude
+t = 13.061, df = 48.568, p-value < 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 1343.545 1832.290
+sample estimates:
+ mean of x  mean of y 
+1542.85714  -45.06031 
+
+> 
+> cor.test(Latitude, Longitude, method="pearson")
+
+        Pearson's product-moment correlation
+
+data:  Latitude and Longitude
+t = -2.7832, df = 47, p-value = 0.007728
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.5944717 -0.1061899
+sample estimates:
+       cor 
+-0.3761544 
+
+> cor.test(Price, Latitude, method="pearson")
+
+        Pearson's product-moment correlation
+
+data:  Price and Latitude
+t = -0.96226, df = 47, p-value = 0.3408
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.4043882  0.1479833
+sample estimates:
+       cor 
+-0.1389973 
+
+> cor.test(Price, Longitude, method="pearson")
+
+        Pearson's product-moment correlation
+
+data:  Price and Longitude
+t = 0.42365, df = 47, p-value = 0.6738
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.2233929  0.3370294
+sample estimates:
+       cor 
+0.06167812 
+
+> 
+> #Kruskal - kryteria s¹ niemo¿liwe do sprawdzenia w R
+> 
