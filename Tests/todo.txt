@@ -1,0 +1,3 @@
+1.sprawdziæ czy da siê zmieniæ dane i zrobiæ analizê (hasattr)
+2. Zobaczyæ czy nag³ówki siê zgadzaj¹
+3. Podes³aæ wyniki do porównania
