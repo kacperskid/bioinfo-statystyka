@@ -1,0 +1,4 @@
+Sprawdzono czy prawid³owo powstaj¹ atrybuty wewn¹trz obiektu z pomoc¹ hasattr, np:
+hasattr(obiekt_testy,Dane)
+I wszystko dzia³a prawid³owo.
+Sprawdzono równie¿ czy nasza klasa zachowa siê prawid³owo je¿eli zmieni siê dane, najpierw wywo³aliœmy klasê a póŸniej obiekt.__init__(), wszystkie wyniki by³y poddmieniane
