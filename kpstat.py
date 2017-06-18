@@ -1,4 +1,5 @@
 # -*- coding: cp1250 -*-
+from kpstat_tests import *
 import pandas as pd
 import scipy.stats
 from collections import OrderedDict
@@ -12,8 +13,8 @@ class StatsExecutor:
     To write html or txt summary, type type analysis_name.write_txt() or analysis_name.write_tho()
     """
     def __init__(self, filepath, sep=",", header=0):
+        """Initializes file, generates data structure and finally automatically runs tests"""
         self.data = pd.read_csv(filepath, sep=sep, header=header) #wczytanie danych z pomocą pandas
-
         self.summary = self._summarize() #statystyki opisowe dodane do obiektu
         self.headers_of_numeric_columns = list(self.summary)  #daje naglowki z kolumn podsumowania ktore automatycznie oblicza je tylko dla kolumn numerycznych
         
@@ -22,7 +23,7 @@ class StatsExecutor:
         self._make_common_tests_set() #uruchamia wszystkie testy, mozna zahashowac 
 
     def _summarize(self):
-        """Performs basic descriptive statistics"""
+        """Performs basic descriptive statistics using pandas"""
         return self.data.describe()# korzysta z wbudowanej metody dla obiektu csv od pandas dla statystyk opisowych
 
     def _prepare_results_storage(self):
@@ -167,7 +168,11 @@ class StatsExecutor:
 
 
 if __name__ == '__main__':
+    """This part of program launches only when the file is directly executed"""
     tests = StatsExecutor("data.csv", sep=",", header=0)
     #tests.print_results()
     #tests.write_txt()
     tests.write_html()
+    instance_test(tests)
+    close_test(tests.report_file_html)
+    file_test("./result.html")
