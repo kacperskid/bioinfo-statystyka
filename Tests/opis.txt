@@ -1,0 +1,14 @@
+1. Uruchomiono skrypt z danymi
+2. Wydrukowano podsumowanie wyników
+3. Sprawdzono wyniki w programie R
+4. Wpisano 
+>>> tests.__init__("data.csv",sep=",",header=0)
+>>> tests.print_results()
+Program zastąpił poprzednie wyniki
+
+5. Sprawdzono program na 3 zbiorach danych
+W pliku testy.csv wykazano porównanie testów wykonanych w kpstat i R; identyczne wyniki otrzymaliśmy przy teście korelacji Pearsona, przy innych testach dane różnią się w zróżnicowanym stopniu, co najprawdopodobniej jest winą wykorzystywanego w programie Pandas.
+
+6. Sprawdzaliśmy obecność atrybutu
+>>> hasattr(tests,"data")
+True
